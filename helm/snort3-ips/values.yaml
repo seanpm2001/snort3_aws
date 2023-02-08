@@ -1,0 +1,54 @@
+# Default values for snort-ips.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+namespace: snort3
+
+snort3Image:
+  repository: docker.io/chxdeng/snort
+  pullPolicy: Always
+  tag: "latest"
+managerImage:
+  repository: docker.io/chxdeng/manager
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets:
+  - name: regcred
+nameOverride: ""
+fullnameOverride: ""
+
+snort3:
+  daq: afpacket
+  interface: eth0
+  mode: -v # use -Q for inline mode and -v for passive mode
+  numThread: 1
+
+serviceAccount:
+  create: true
+  name: snort3-ips-service-account
+
+aws:
+  region: us-west-1
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+resources: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

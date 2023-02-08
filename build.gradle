@@ -1,0 +1,66 @@
+task build {
+    group 'Build'
+    description 'start snort3 build container'
+    dependsOn 'snort3-dockers:build-time:build'
+
+    doLast {
+        exec {
+            commandLine 'python3', "${rootProject.projectDir}/scripts/start_container.py", "${rootProject.projectDir}", 'snort3-build', 'snort3-build:latest'
+        }
+    }
+}
+
+task clean {
+    group 'Clean'
+    description 'stop build container'
+
+    doLast {
+        exec {
+            commandLine 'python3', "${rootProject.projectDir}/scripts/stop_container.py", 'snort3-build'
+        }
+    }
+}
+
+task startLocalTest {
+    group 'Local test'
+    description 'local test using Kind cluster'
+
+    doLast {
+        // create a cluster
+        exec {
+            commandLine './scripts/setup_kind_cluster.sh', "${rootProject.projectDir}/scripts/etc/kind-cluster.yaml"
+        }
+        // create namespace
+        exec {
+            commandLine 'kubectl', 'create', 'namespace', 'snort3'
+        }
+        // create regcred for pulling images
+        exec {
+            commandLine 'kubectl', 'create', 'secret', 'docker-registry', 'regcred', '--docker-server='+System.getenv('DOCKER_SERVER'), '--docker-username='+System.getenv('DOCKER_USER'), '--docker-password='+System.getenv('DOCKER_PASSWORD'), '-n', 'snort3'
+        }
+        // install the helm chart
+        exec {
+            commandLine 'helm', 'install', 'snort3-ips-test', "${rootProject.projectDir}/helm/snort3-ips/."
+        }
+    }
+}
+
+task stopLocalTest {
+    group 'Local test'
+    description 'local test using Kind cluster'
+
+    doLast {
+        // unstall helm chart
+        exec {
+            commandLine 'helm', 'delete', 'snort3-ips-test'        
+        }
+        // delete namespace
+        exec {
+            commandLine 'kubectl', 'delete', 'namespace', 'snort3'
+        }
+        // delete the cluster
+        exec {
+            commandLine './scripts/cleanup_kind_cluster.sh'
+        }
+    }
+}

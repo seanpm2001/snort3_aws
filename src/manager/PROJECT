@@ -1,0 +1,16 @@
+domain: github.com
+layout:
+- go.kubebuilder.io/v3
+projectName: manager
+repo: github.com/snort3_aws
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: github.com
+  group: config
+  kind: IpsPolicy
+  path: github.com/snort3_aws/api/v1
+  version: v1
+version: "3"

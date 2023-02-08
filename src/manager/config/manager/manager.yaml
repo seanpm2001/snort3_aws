@@ -1,0 +1,60 @@
+#apiVersion: v1
+#kind: Namespace
+#metadata:
+#  labels:
+#    data-plane: snort-ips
+#  name: system
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snort-ips
+  namespace: system
+  labels:
+    data-plane: snort-ips
+spec:
+  selector:
+    matchLabels:
+      data-plane: snort-ips
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
+      labels:
+        data-plane: snort-ips
+    spec:
+      securityContext:
+        runAsNonRoot: false
+      containers:
+      - command:
+        - /manager
+        args:
+        - --leader-elect
+        image: controller:latest
+        name: manager
+        securityContext:
+          allowPrivilegeEscalation: false
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        # TODO(user): Configure the resources accordingly based on the project requirements.
+        # More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+      serviceAccountName: snort-ips
+      terminationGracePeriodSeconds: 10

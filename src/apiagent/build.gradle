@@ -1,0 +1,32 @@
+ext {
+    apiagentBin = '../../snort3-dockers/run-time/artifact/apiagent'
+}
+
+task buildSrc() {
+    group 'BuildSrc'
+    description "build apiagent go binary"
+    dependsOn ':build'
+    dependsOn ':src:message:build'
+
+    doLast {
+        exec {
+            commandLine 'docker', 'exec', 'snort3-build', '/bin/bash', '-c', 'cd /snort3_aws/src/apiagent; go build -o ' + apiagentBin + ' main.go'
+        }
+    }
+}
+
+task build() {
+    group 'Build'
+    dependsOn 'buildSrc'
+}
+
+task clean() {
+    group 'Clean'
+    description 'clean artifact'
+
+    doLast {
+        exec {
+            commandLine 'rm', '-rf', apiagentBin
+        }
+    }
+}

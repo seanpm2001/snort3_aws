@@ -1,0 +1,11 @@
+task test() {
+    group 'Test'
+    dependsOn ':build'
+    dependsOn ':src:message:build'
+
+    doLast {
+        exec {
+            commandLine 'docker', 'exec', 'snort3-build', '/bin/bash', '-c', 'cd /snort3_aws/src/apiagent/lightspd; go test'
+        }
+    }
+}

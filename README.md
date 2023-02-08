@@ -1,4 +1,48 @@
 # snort3_aws
+snort3_aws is a project for building snort3 docker images and deploying IPS/IDS in AWS environment using 
+Gateway Load Balancer(GWLB) and Elastic Kubernetes Service (EKS).
+
+## How to build docker images
+In order to build the docker images and run kubernetes deployment, the following applications must be
+installed on your local computer
+  - java for running gradle build
+  - docker
+  - go
+  - kubectl
+  - helm for running local test
+  - kind for running local test
+  - aws cli for installing gwlb and eks using cloudformation script
+  - a dockerhub repo where you can publish images
+
+To build docker image, first set the following environmental variables.
+```
+export DOCKER_REPO='your_docker_repo'
+export DOCKER_SERVER='your_dockerhub_server'
+export DOCKER_USER='your_docker_username'
+export DOCKER_PASSWORD='your_docker_password'
+```
+Then run
+```
+./gradlew build
+```
+You can also run unit test
+```
+./gradlew test
+```
+
+To publish docker images
+```
+./gradlew publish
+```
+
+## How to run local test using Kind cluster
+```
+./gradlew startLocalTest
+```
+
+```
+./gradlew stopLocalTest
+```
 
 ## How to configure helm chart
 

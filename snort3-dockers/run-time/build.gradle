@@ -1,0 +1,23 @@
+task build() {
+    group 'Build'
+    description 'build run time docker image'
+    dependsOn ':snort3-dockers:build-time:build'
+    dependsOn ':src:apiagent:buildSrc'
+
+    doLast {
+        exec {
+            commandLine 'docker', 'build', '-t', System.getenv('DOCKER_REPO') + '/snort:latest', '-f', 'Dockerfile', '.'
+        }
+    }
+}
+
+task publish() {
+    group 'Publish'
+    dependsOn 'build'
+
+    doLast {
+        exec {
+            commandLine 'docker', 'push', System.getenv('DOCKER_REPO') + '/snort:latest'
+        }
+    }
+}
