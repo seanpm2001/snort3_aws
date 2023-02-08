@@ -1,0 +1,24 @@
+# permissions for end users to edit talosspds.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: talosspd-editor-role
+rules:
+- apiGroups:
+  - config.github.com
+  resources:
+  - talosspds
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - config.github.com
+  resources:
+  - talosspds/status
+  verbs:
+  - get

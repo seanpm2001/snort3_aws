@@ -1,0 +1,48 @@
+task buildSrc() {
+    group 'BuildSrc'
+    description "build manager go binary"
+    dependsOn ':build'
+
+    doLast {
+        exec {
+            commandLine 'mkdir', '-p', 'bin'
+        }
+        exec {
+            commandLine 'docker', 'exec', 'snort3-build', '/bin/bash', '-c', 'cd /snort3_aws/src/manager; go build -o bin/manager main.go'
+        }
+    }
+}
+
+task build() {
+    group 'Build'
+    description "build manager docker image"
+    dependsOn 'buildSrc'
+
+    doLast {
+        exec {
+            commandLine 'docker', 'build', '-f', './Dockerfile', '-t', System.getenv('DOCKER_REPO') + '/manager', '../../.'
+        }
+    }
+}
+
+task clean() {
+    group 'Clean'
+    description 'clean artifact'
+
+    doLast {
+        exec {
+            commandLine 'rm', '-rf', './bin'
+        }
+    }
+}
+
+task publish() {
+    group 'Publish'
+    dependsOn 'build'
+
+    doLast {
+        exec {
+            commandLine 'docker', 'push', System.getenv('DOCKER_REPO') + '/manager'
+        }
+    }
+}

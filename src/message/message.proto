@@ -1,0 +1,22 @@
+syntax = "proto3";
+  
+option go_package = "github.com/snort3_aws/message";
+
+package message;
+
+message IpsPolicy {
+    string policyName = 1;
+}
+
+message Response {
+    string status = 1;
+}
+
+message ReloadLsp {
+    string lspVersion = 1;
+}
+
+service Message {
+    rpc ReloadIpsPolicy(IpsPolicy) returns (Response) {}
+    rpc ReloadTalosLsp(ReloadLsp) returns (Response) {}
+}

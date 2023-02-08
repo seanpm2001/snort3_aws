@@ -1,0 +1,10 @@
+task build() {
+    group 'Build'
+    description "build time docker image"
+
+    doLast {
+        exec {
+            commandLine 'docker', 'build', '-t', 'snort3-build:latest', '-f', 'Dockerfile', '.'
+        }
+    }
+}
