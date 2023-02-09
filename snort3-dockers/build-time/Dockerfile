@@ -1,4 +1,4 @@
-ARG UBUNTU_VERSION="focal-20211006"
+ARG UBUNTU_VERSION="focal-20230126"
 FROM ubuntu:${UBUNTU_VERSION}
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt -y install \
@@ -7,7 +7,7 @@ RUN apt-get update && apt -y install \
     liblzma-dev pip unzip protobuf-compiler \
     golang-goprotobuf-dev
 
-ENV GO_BIN=go1.17.2.linux-amd64.tar.gz
+ENV GO_BIN=go1.20.linux-amd64.tar.gz
 RUN wget https://dl.google.com/go/${GO_BIN} \
     && tar -xvf ${GO_BIN} \
     && mv go /usr/local \
@@ -15,7 +15,7 @@ RUN wget https://dl.google.com/go/${GO_BIN} \
 RUN export PATH=$PATH:/usr/local/go/bin
 RUN ln -s /usr/local/go/bin/go /usr/local/bin/go
 
-RUN go get github.com/golang/protobuf/protoc-gen-go
+RUN go install github.com/golang/protobuf/protoc-gen-go@latest
 RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 RUN cp /root/go/bin/protoc-gen-go /usr/local/bin/.
 RUN cp /root/go/bin/protoc-gen-go-grpc /usr/local/bin/.

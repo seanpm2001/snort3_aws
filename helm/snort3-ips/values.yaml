@@ -7,11 +7,11 @@ replicaCount: 2
 namespace: snort3
 
 snort3Image:
-  repository: docker.io/chxdeng/snort
+  repository: YOUR_DOCKER_REPO/snort
   pullPolicy: Always
   tag: "latest"
 managerImage:
-  repository: docker.io/chxdeng/manager
+  repository: YOU_DOCKER_REPO/manager
   pullPolicy: Always
   tag: "latest"
 
