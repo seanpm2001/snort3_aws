@@ -30,8 +30,8 @@ const (
 	stateStart = "start"
 	lspdJsonFile = "/var/snort/lspd.json"
 	lspVerLen = 14
-	PolicyVer = "3.1.11.0-0"
-	ModuleVer = "3.1.15.0"
+	PolicyVer = "3.1.0.0-0"
+	ModuleVer = "3.1.44.0"
 )
 
 type LightSpdReload struct {

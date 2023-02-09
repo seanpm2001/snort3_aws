@@ -45,6 +45,8 @@ To publish docker images
 ```
 
 ## How to configure helm chart
+Before installing the helm chart, please replace the YOUR_DOCKER_REPO in helm/snort3-ips/values.yaml with your
+actual docker repo.
 
 ### AWS EKS deployment with gateway load balancer (GWLB)
 Please see aws/gwlb and aws/eks in this repo for creating GWLB and EKS using cloudformation templates.

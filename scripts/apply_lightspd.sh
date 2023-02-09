@@ -30,9 +30,9 @@ if [ $verlen -lt 14 ]; then
     exit
 fi
 
-pod=`kubectl get pods -n isv-namespace -o wide | grep storage- |cut -d" " -f 1`
+pod=`kubectl get pods -n snort3 -o wide | grep storage- |cut -d" " -f 1`
 echo "upload $1 to storage server"
-kubectl cp $1 $pod:/usr/share/nginx/html/Talos_LightSPD.tar.gz -n isv-namespace
+kubectl cp $1 $pod:/usr/share/nginx/html/Talos_LightSPD.tar.gz -n snort3
 
 echo "update Talos Talos_LightSPD crd"
 kubectl apply -f - << EOM
