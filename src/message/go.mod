@@ -1,6 +1,6 @@
 module github.com/snort3_aws/message
 
-go 1.18
+go 1.20
 
 require (
 	google.golang.org/grpc v1.42.0
