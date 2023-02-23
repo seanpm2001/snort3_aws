@@ -13,6 +13,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/snort3_aws/apiagent/download v0.0.0-00010101000000-000000000000
 	github.com/snort3_aws/apiagent/reload v0.0.0-00010101000000-000000000000
+	github.com/snort3_aws/ipspolicy v0.0.0-00010101000000-000000000000
 	github.com/snort3_aws/message v0.0.0-00010101000000-000000000000
 	github.com/stretchr/testify v1.7.0
 	google.golang.org/protobuf v1.27.1
@@ -32,12 +33,11 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/snort3_aws/ipspolicy v0.0.0-00010101000000-000000000000 // indirect
 	golang.org/x/net v0.0.0-20210520170846-37e1c6afe023 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
-	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
+	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect
 	golang.org/x/term v0.0.0-20210220032956-6a3ed077a48d // indirect
-	golang.org/x/text v0.3.6 // indirect
+	golang.org/x/text v0.3.8 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 	google.golang.org/genproto v0.0.0-20201019141844-1ed22bb0c154 // indirect
