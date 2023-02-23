@@ -1,6 +1,6 @@
 module github.com/snort3_aws/apiagent/lightspd
 
-go 1.17
+go 1.20
 
 replace github.com/snort3_aws/apiagent/download => ../download
 

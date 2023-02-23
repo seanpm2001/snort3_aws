@@ -2,16 +2,16 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 2
+replicaCount: 1
 
 namespace: snort3
 
 snort3Image:
-  repository: YOUR_DOCKER_REPO/snort
+  repository: chxdeng/snort
   pullPolicy: Always
   tag: "latest"
 managerImage:
-  repository: YOU_DOCKER_REPO/manager
+  repository: chxdeng/manager
   pullPolicy: Always
   tag: "latest"
 
@@ -21,9 +21,8 @@ nameOverride: ""
 fullnameOverride: ""
 
 snort3:
-  daq: afpacket
   interface: eth0
-  mode: -v # use -Q for inline mode and -v for passive mode
+  mode: -Q # use -Q for inline mode and -v for passive mode
   numThread: 1
 
 serviceAccount:

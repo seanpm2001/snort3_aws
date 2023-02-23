@@ -36,16 +36,13 @@ Metadata:
         Parameters:
           - ApplianceVpcId
           - ApplianceVpcTgwAttachSubnet1Id
-          - ApplianceVpcTgwAttachSubnet2Id
           - ApplianceVpcApplianceRtb1Id
-          - ApplianceVpcApplianceRtb2Id
       - Label:
           default: TGW Spoke1 VPC Configuration
         Parameters:
           - Spoke1VpcId
           - Spoke1VpcCidr
           - Spoke1VpcTgwAttachSubnet1Id
-          - Spoke1VpcTgwAttachSubnet2Id
           - Spoke1VpcRtb1Id
       - Label:
           default: TGW Spoke2 VPC Configuration
@@ -53,7 +50,6 @@ Metadata:
           - Spoke2VpcId
           - Spoke2VpcCidr
           - Spoke2VpcTgwAttachSubnet1Id
-          - Spoke2VpcTgwAttachSubnet2Id
           - Spoke2VpcRtb1Id
       - Label:
           default: Network CIDR for access
@@ -65,12 +61,8 @@ Metadata:
         default: Appliane VPC ID
       ApplianceVpcTgwAttachSubnet1Id:
         default: Appliance VPC Transit Gateway Subnet 1 ID
-      ApplianceVpcTgwAttachSubnet2Id:
-        default: Appliance VPC Transit Gateway Subnet 2 ID
       ApplianceVpcApplianceRtb1Id:
         default: Appliance VPC Appliance Route Table 1 ID
-      ApplianceVpcApplianceRtb2Id:
-        default: Appliance VPC Appliance Route Table 2 ID
       # Spoke1 VPC Parameter Labels:
       Spoke1VpcId:
         default: Spoke1 VPC ID
@@ -78,8 +70,6 @@ Metadata:
         default: Spoke1 VPC CIDR
       Spoke1VpcTgwAttachSubnet1Id:
         default: Spoke1 VPC Subnet1 ID
-      Spoke1VpcTgwAttachSubnet2Id:
-        default: Spoke1 VPC Subnet2 ID
       Spoke1VpcRtb1Id:
         default: Spoke1 VPC Application Route Table ID
       # Spoke2 VPC Parameter Labels:
@@ -89,8 +79,6 @@ Metadata:
         default: Spoke2 VPC CIDR
       Spoke2VpcTgwAttachSubnet1Id:
         default: Spoke2 VPC Subnet1 ID
-      Spoke2VpcTgwAttachSubnet2Id:
-        default: Spoke2 VPC Subnet2 ID
       Spoke2VpcRtb1Id:
         default: Spoke2 VPC Application Route Table ID
       # Network CIDR Location:
@@ -107,18 +95,10 @@ Parameters:
     Description: Appliance VPC Subnet1 ID for TGW attachment in AZ1
     Type: String
     ConstraintDescription: Must be a valid Subnet ID    
-  ApplianceVpcTgwAttachSubnet2Id:
-    Description: Appliance VPC Subnet2 ID for TGW attachment in AZ2
-    Type: String
-    ConstraintDescription: Must be a valid Subnet ID  
   ApplianceVpcApplianceRtb1Id:
     Description: Appliance VPC Appliance Route Table 1 ID
     Type: String
     ConstraintDescription: Must be a valid Route Table ID    
-  ApplianceVpcApplianceRtb2Id:
-    Description: Appliance VPC Appliance Route Table 2 ID
-    Type: String
-    ConstraintDescription: Must be a valid Route Table ID     
   # Spoke1 VPC Parameters:
   Spoke1VpcId:
     Description: Spoke1 VPC ID
@@ -132,10 +112,6 @@ Parameters:
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/y   
   Spoke1VpcTgwAttachSubnet1Id:
     Description: Spoke1 VPC Subnet1 ID for TGW attachment in AZ1
-    Type: String
-    ConstraintDescription: Must be a valid Subnet ID  
-  Spoke1VpcTgwAttachSubnet2Id:
-    Description: Spoke1 VPC Subnet2 ID for TGW attachment in AZ2
     Type: String
     ConstraintDescription: Must be a valid Subnet ID  
   Spoke1VpcRtb1Id:
@@ -155,10 +131,6 @@ Parameters:
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/y  
   Spoke2VpcTgwAttachSubnet1Id:
     Description: Spoke2 VPC Subnet1 ID for TGW attachment in AZ1
-    Type: String
-    ConstraintDescription: Must be a valid Subnet ID  
-  Spoke2VpcTgwAttachSubnet2Id:
-    Description: Spoke2 VPC Subnet2 ID for TGW attachment in AZ2
     Type: String
     ConstraintDescription: Must be a valid Subnet ID  
   Spoke2VpcRtb1Id:
@@ -199,7 +171,6 @@ Resources:
     Properties:
       SubnetIds:
         - !Ref ApplianceVpcTgwAttachSubnet1Id
-        - !Ref ApplianceVpcTgwAttachSubnet2Id
       TransitGatewayId: !Ref Tgw1
       VpcId: !Ref ApplianceVpcId
       Tags:
@@ -211,7 +182,6 @@ Resources:
     Properties:
       SubnetIds:
         - !Ref Spoke1VpcTgwAttachSubnet1Id
-        - !Ref Spoke1VpcTgwAttachSubnet2Id
       TransitGatewayId: !Ref Tgw1
       VpcId: !Ref Spoke1VpcId
       Tags:
@@ -223,7 +193,6 @@ Resources:
     Properties:
       SubnetIds:
         - !Ref Spoke2VpcTgwAttachSubnet1Id
-        - !Ref Spoke2VpcTgwAttachSubnet2Id
       TransitGatewayId: !Ref Tgw1
       VpcId: !Ref Spoke2VpcId
       Tags:
@@ -308,23 +277,7 @@ Resources:
       DestinationCidrBlock: !Ref Spoke2VpcCidr
       TransitGatewayId: !Ref Tgw1
       RouteTableId: !Ref ApplianceVpcApplianceRtb1Id
-  # AZ2:
-  AddRoute3ApplianceVpc:
-    DependsOn: [Tgw1, Tgw1ApplianceVpcAttachment] 
-    Type: AWS::EC2::Route
-    Properties:
-      DestinationCidrBlock: !Ref Spoke1VpcCidr
-      TransitGatewayId: !Ref Tgw1
-      RouteTableId: !Ref ApplianceVpcApplianceRtb2Id
 
-  AddRoute4ApplianceVpc:
-    DependsOn: [Tgw1, Tgw1ApplianceVpcAttachment] 
-    Type: AWS::EC2::Route
-    Properties:
-      DestinationCidrBlock: !Ref Spoke2VpcCidr
-      TransitGatewayId: !Ref Tgw1
-      RouteTableId: !Ref ApplianceVpcApplianceRtb2Id  
-  
   # Spoke1 VPC route table configuration:
   AddRoute1Spoke1Vpc:
     DependsOn: [Tgw1, Tgw1Spoke1VpcAttachment]

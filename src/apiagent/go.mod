@@ -1,6 +1,6 @@
 module github.com/snort3_aws/apiagent
 
-go 1.18
+go 1.20
 
 require (
 	github.com/snort3_aws/apiagent/lightspd v0.0.0-00010101000000-000000000000
