@@ -1,4 +1,4 @@
-# Following example shows how to create Spoke VPC and integrate with 
+# Following example shows how to create client VPC and integrate with 
 # AWS Gateway Load Balancer (GWLB) centralized architecture 
 # using AWS CloudFormation.
 
@@ -17,12 +17,12 @@ Description: >-
   This template creates:
     - 1 VPC
     - 1 IGW
-    - 4 private subnets, one in each AZ for application instances and TGW attachments
-    - 2 public subnet, one in each AZ
+    - 2 private subnets, one in each AZ for application instances and TGW attachments
+    - 1 public subnet
     - 1 private route table and 1 public route table
     - 2 Security group: Application and Bastion
-    - 2 Amazon Linux 2 instance acting as applications, one in each AZ
-    - 1 Amazon Linux 2 instance acting as bastion host to access Application instances.
+    - 1 Amazon Linux 2 instance acting as an application
+    - 1 Amazon Linux 2 instance acting as bastion host to access the Application instance.
   
   **WARNING** This template creates one or more Amazon EC2 instances. You will
   be billed for the AWS resources used if you create a stack from this template.
@@ -38,10 +38,6 @@ Metadata:
           - BastionSubnet1Cidr
           - ApplicationSubnet1Cidr
           - TgwAttachSubnet1Cidr
-          - AvailabilityZone2
-          - BastionSubnet2Cidr
-          - ApplicationSubnet2Cidr
-          - TgwAttachSubnet2Cidr
       - Label:
           default: Application Configuration
         Parameters:
@@ -62,14 +58,6 @@ Metadata:
         default: Spoke VPC - Application Subnet 1 CIDR
       TgwAttachSubnet1Cidr:
         default: Spoke VPC - TGW Attachment Subnet 1 CIDR     
-      AvailabilityZone2:
-        default: Spoke VPC - Availability Zone 2
-      BastionSubnet2Cidr:
-        default: Spoke VPC - Bastion Subnet 2 CIDR      
-      ApplicationSubnet2Cidr:
-        default: Spoke VPC - Application Subnet 2 CIDR
-      TgwAttachSubnet2Cidr:
-        default: Spoke VPC - TGW Attachment Subnet 2 CIDR        
       ApplicationInstanceType:
         default: Application Instance Type
       ApplicationInstanceAmiId:
@@ -110,28 +98,6 @@ Parameters:
     Description: Spoke VPC - TGW Attachment Subnet 1 CIDR in Availability Zone 1
     Type: String
     ConstraintDescription: Subnet CIDR parameter must be in the form x.x.x.x/16-28    
-  AvailabilityZone2:
-    Description: Availability Zone to use for the Public Subnet 2 in the VPC
-    Type: AWS::EC2::AvailabilityZone::Name
-    ConstraintDescription: Valid Availability Zone Id
-  BastionSubnet2Cidr:
-    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
-    Default: 10.0.0.80/28
-    Description: Spoke VPC - Bastion Subnet 2 CIDR in Availability Zone 2
-    Type: String
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28 
-  ApplicationSubnet2Cidr:
-    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
-    Default: 10.0.0.32/28
-    Description: Spoke VPC - Application Subnet 2 CIDR in Availability Zone 2
-    Type: String
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
-  TgwAttachSubnet2Cidr:
-    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
-    Default: 10.0.0.48/28
-    Description: Spoke VPC - TGW Attachment Subnet 2 CIDR in Availability Zone 1
-    Type: String
-    ConstraintDescription: Subnet CIDR parameter must be in the form x.x.x.x/16-28   
   ApplicationInstanceType:
     Description: Select EC2 instance type for Application instance. Default is set to t2.micro
     Default: t2.micro
@@ -227,40 +193,6 @@ Resources:
         - Key: Name
           Value: !Sub "${AWS::StackName}-tgw-attach-subnet-1"
 
-  # AZ2:
-  BastionSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: !Ref AvailabilityZone2
-      CidrBlock: !Ref BastionSubnet2Cidr
-      VpcId: !Ref Vpc
-      MapPublicIpOnLaunch: "true"
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-bastion-subnet-2"
-
-  ApplicationSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: !Ref AvailabilityZone2
-      CidrBlock: !Ref ApplicationSubnet2Cidr
-      VpcId: !Ref Vpc
-      MapPublicIpOnLaunch: "true"
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-application-subnet-2"
-
-  TgwAttachSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: !Ref AvailabilityZone2
-      CidrBlock: !Ref TgwAttachSubnet2Cidr
-      VpcId: !Ref Vpc
-      MapPublicIpOnLaunch: "true"
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-tgw-attach-subnet-2"
-
 # Create Route Tables:
   ApplicationRouteTable:
     Type: AWS::EC2::RouteTable
@@ -296,25 +228,6 @@ Resources:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref BastionSubnet1
-      RouteTableId: !Ref BastionRouteTable
-
-  # AZ2:
-  ApplicationSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref ApplicationSubnet2
-      RouteTableId: !Ref ApplicationRouteTable
-  
-  TgwAttachSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref TgwAttachSubnet2
-      RouteTableId: !Ref ApplicationRouteTable
-
-  BastionSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref BastionSubnet2
       RouteTableId: !Ref BastionRouteTable
 
 # Create Routes. Routes with TGW as the target are created through TGW template:
@@ -361,7 +274,7 @@ Resources:
         - Key: Name
           Value: !Sub "${AWS::StackName}-application-sg"
 
-# Create Application Instances:
+# Create Application Instance:
 
   Application1:
     Type: AWS::EC2::Instance
@@ -385,37 +298,6 @@ Resources:
 
           # Configure hostname:
           hostnamectl set-hostname ${AWS::StackName}-application1;
-
-          # Configure SSH client alive interval for ssh session timeout:
-          echo 'ClientAliveInterval 60' | sudo tee --append /etc/ssh/sshd_config;
-          service sshd restart;
-          
-          # Set dark background for vim:
-          touch /home/ec2-user/.vimrc;
-          echo "set background=dark" >> /home/ec2-user/.vimrc;
-
-  Application2:
-    Type: AWS::EC2::Instance
-    Properties:
-      ImageId: !Ref ApplicationInstanceAmiId
-      KeyName: !Ref KeyPairName
-      InstanceType: !Ref ApplicationInstanceType
-      SecurityGroupIds:
-        - !Ref ApplicationSg
-      SubnetId: !Ref ApplicationSubnet2
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
-            VolumeSize: !Ref ApplicationInstanceDiskSize
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-application-instance-2"
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash -ex
-
-          # Configure hostname:
-          hostnamectl set-hostname ${AWS::StackName}-application2;
 
           # Configure SSH client alive interval for ssh session timeout:
           echo 'ClientAliveInterval 60' | sudo tee --append /etc/ssh/sshd_config;
@@ -512,24 +394,15 @@ Outputs:
   SpokeApplication1PrivateIp:
     Description: Spoke VPC Application Instance Private IP
     Value: !GetAtt Application1.PrivateIp
-  SpokeApplication2PrivateIp:
-    Description: Spoke VPC Application Instance Private IP
-    Value: !GetAtt Application2.PrivateIp      
   SpokeApplication1PublicIp:
     Description: Spoke VPC Application Instance Public IP
     Value: !GetAtt Application1.PublicIp
-  SpokeApplication2PublicIp:
-    Description: Spoke VPC Application Instance Public IP
-    Value: !GetAtt Application2.PublicIp    
   SpokeBastionHostPublicIp:
     Description: Spoke VPC Bastion Instance Public IP
     Value: !GetAtt BastionHost.PublicIp
   SpokeTgwAttachSubnet1Id:
     Description: Spoke VPC TgwAttachSubnet1 ID
     Value: !Ref TgwAttachSubnet1
-  SpokeTgwAttachSubnet2Id:
-    Description: Spoke VPC TgwAttachSubnet2 ID
-    Value: !Ref TgwAttachSubnet2  
   SpokeApplicationRouteTableId:
     Description: Application Route Table ID
     Value: !Ref ApplicationRouteTable
